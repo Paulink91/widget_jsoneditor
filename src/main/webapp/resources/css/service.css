@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+html, body, div#jsoneditor_widget{
+	height: 100%;
+}
+
+#jsoneditor {
+	min-height: 200px;
+	width: 100%;
+}
+
+select, #addCollection > button, #jsonblock > button{
+	width: 100%;
+}
+
+div#serviceButtons{
+	text-align: center;	
+}
+
+div.buttonblock{
+	margin: 0px;
+	display: inline;
+}
+
+div#serviceButtons button{
+	display: inline;
+}
