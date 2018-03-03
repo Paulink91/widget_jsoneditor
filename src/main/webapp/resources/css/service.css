@@ -4,13 +4,17 @@ html, body, div#jsoneditor_widget{
 	height: 100%;
 }
 
-#jsoneditor {
-	min-height: 200px;
+div#jsoneditor_widget{
 	width: 100%;
 }
 
-select, #addCollection > button, #jsonblock > button{
-	width: 100%;
+#jsoneditor {
+	min-height: 200px;
+	width: inherit;
+}
+
+select, #addCollection > button, #jsonblock > button, #string_to_json, #jsonblock{
+	width: inherit;
 }
 
 div#serviceButtons{
@@ -24,4 +28,8 @@ div.buttonblock{
 
 div#serviceButtons button{
 	display: inline;
+}
+
+textArea{
+	resize: none;
 }
