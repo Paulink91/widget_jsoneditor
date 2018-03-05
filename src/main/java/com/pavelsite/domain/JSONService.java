@@ -82,27 +82,14 @@ public class JSONService{
 	}
 	
 	public BasicDBObject getJSON(String id){
-		DBCursor cur = curCol.find();
-		while (cur.hasNext()) {
-			BasicDBObject obj = (BasicDBObject)cur.next();
-			ObjectId objId = (ObjectId)obj.getID();
-			if (objId.toString().equals(id)) {
-				return obj;
-			}
-		}
-		BasicDBObject json = new BasicDBObject();
-		return json;
+		return (BasicDBObject)curCol.findOne(new ObjectId(id));
 	}
 	
-	public String updateJSON(LinkedHashMap<String, Object> json){
-		BasicDBObject jsonFromDb = getJSON(json.get("_id_temp").toString());
-		json.remove("_id_temp");
-		curCol.findAndModify(jsonFromDb, new BasicDBObject(json));
-		return jsonFromDb.getID().toString();
+	public void updateJSON(String id, LinkedHashMap<String, Object> json){
+		curCol.update(new BasicDBObject().append("_id", new ObjectId(id)), new BasicDBObject(json));
 	}
 	
-	public String removeJSON(String id){
-		curCol.findAndRemove(getJSON(id));
-		return id;
+	public void removeJSON(String id){
+		curCol.remove(new BasicDBObject().append("_id", new ObjectId(id)));
 	}
 }

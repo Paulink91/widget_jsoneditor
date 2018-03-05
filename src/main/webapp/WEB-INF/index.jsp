@@ -15,17 +15,17 @@
 			<div id="addCollection">
 				<input id="newCollection"/>
 				<br/>
-				<button onclick="addCol()">Add collection</button>
+				<button id="addCol" onclick="addCol()">Add collection</button>
 			</div>
 			<div id="jsonblock">
-				<button onclick="removeCol()">Remove collection</button>
+				<button id="delCollection" onclick="removeCol()">Remove collection</button>
 				<br/>
 				<select id="chooseId"></select>
 				<br/>
 				<div id="serviceButtons">
-					<button onclick="addJSON()">Add to DB</button>
-					<button onclick="updateJSONById()">Update</button>
-					<button onclick="removeJSONById()">Remove</button>
+					<button id="updJSON" onclick="updateJSONById()">Update</button>	
+					<button id="addJSON" onclick="addJSON()">Add to DB</button>
+					<button id="delJSON" onclick="removeJSONById()">Remove</button>
 				</div>
 				<div id="jsoneditor"></div>
 				<textarea id="string_to_json"></textarea>
@@ -40,7 +40,7 @@ var no_elem_msg = "There is no element in the DB with this id";
 $("document").ready(function(){
 	getCols();
 	$("#addCollection input").width($("#chooseCollection").width()-4);
-	$("div#serviceButtons button").width(($("div#jsoneditor_widget").width()-79)/3);
+	$("div#serviceButtons button, #delCollection, #addCol").width(($("div#jsoneditor_widget").width()-79)/3);
 	$("#jsoneditor").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 	$("#string_to_json").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 	
@@ -50,7 +50,7 @@ $("#chooseCollection").on("change", getColByName);
 
 $(window).resize(function(){
 	$("#addCollection input").width($("#chooseCollection").width()-4);
-	$("div#serviceButtons button").width(($("div#jsoneditor_widget").width()-79)/3);
+	$("div#serviceButtons button, #delCollection, #addCol").width(($("div#jsoneditor_widget").width()-79)/3);
 	$("#jsoneditor").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 	$("#string_to_json").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 });
@@ -149,9 +149,11 @@ function getIds(){
 };
 
 function setIds(data){
+	$("#updJSON, #delJSON").hide();
 	$("#chooseId").html(data);
 	$("#chooseId")[0].value = "new_record";
 	editor.set({});
+	
 };
 	        
 function addJSON(){
@@ -164,7 +166,7 @@ function addJSON(){
 	delete json._id;
 	var data_json;
 	if ($("#chooseId").val() === "new_record_string"){
-		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").replace("\"","").replace("\"$","");
+		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\").join("\\\\\\").replace("\"","").replace("\"$","");
 	} else {
 		data_json = JSON.stringify(json);
 	}
@@ -176,6 +178,9 @@ function addJSON(){
 		datatype : 'text',
 		success : function(data) {
 			$("#paragraph").text("Element (id=\""+data+"\") has been added");
+			$("#jsoneditor").show();
+			$("#string_to_json").hide();
+			$("#string_to_json").val("");
 			getIds();
 		}
 	};
@@ -188,12 +193,15 @@ function getJSONById(){
 		editor.set({});	
 		$("#jsoneditor").show();
 		$("#string_to_json").hide();
+		$("#updJSON, #delJSON").hide();
 	} else if ($("#chooseId").val() === "new_record_string") {
 		$("#jsoneditor").hide();
 		$("#string_to_json").show();
+		$("#updJSON, #delJSON").hide();
 	} else {
 		$("#jsoneditor").show();
 		$("#string_to_json").hide();
+		$("#updJSON, #delJSON").show();
 		var options = {
 			url: "./json/get/"+$("#chooseId").val(),
 			type : "GET",

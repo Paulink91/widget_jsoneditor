@@ -57,11 +57,15 @@ public class RestControllerClass {
 	
 	@PutMapping(value="/json/update")
 	public ResponseEntity<String> updateJSONMapping(@RequestBody LinkedHashMap<String, Object> obj){
-		return new ResponseEntity<String>(service.updateJSON(obj), HttpStatus.OK);
+		String id = obj.get("_id_temp").toString();
+		obj.remove("_id_temp");		
+		service.updateJSON(id, obj);
+		return new ResponseEntity<String>(id, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value="/json/remove")
 	public ResponseEntity<String> removeJSONMapping(@RequestBody String jsonId){
-		return new ResponseEntity<String>(service.removeJSON(jsonId), HttpStatus.OK);
+		service.removeJSON(jsonId);
+		return new ResponseEntity<String>(jsonId, HttpStatus.OK);
 	}
 }

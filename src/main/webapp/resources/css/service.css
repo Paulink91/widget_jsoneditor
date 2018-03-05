@@ -30,6 +30,14 @@ div#serviceButtons button{
 	display: inline;
 }
 
+#jsonblock, #addCollection{
+	text-align: center;
+}
+
 textArea{
 	resize: none;
+}
+
+#updJSON, #delJSON{
+	display: none;
 }
