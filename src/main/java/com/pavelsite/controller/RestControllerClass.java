@@ -1,6 +1,6 @@
 package com.pavelsite.controller;
 
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,9 @@ public class RestControllerClass {
 	
 	@GetMapping(value="/json/get/{id}")
 	public ResponseEntity<Object> getJSONMapping(@PathVariable("id") String jsonId){
-		return new ResponseEntity<Object>(service.getJSON(jsonId), HttpStatus.OK);
+		Map<String, Object> map = service.getJSON(jsonId);
+		map.replace("_id", jsonId);
+		return new ResponseEntity<Object>(map, HttpStatus.OK);
 	}
 	
 	@PostMapping(value="/json/add")

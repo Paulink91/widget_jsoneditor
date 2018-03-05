@@ -11,7 +11,7 @@
 	<body>
 		<div id="jsoneditor_widget">
 			<p id="paragraph"> </p>
-			<select id="chooseCollection"></select>
+			<select id="chooseCollection" size="5"></select>
 			<div id="addCollection">
 				<input id="newCollection"/>
 				<br/>
@@ -28,6 +28,7 @@
 					<button onclick="removeJSONById()">Remove</button>
 				</div>
 				<div id="jsoneditor"></div>
+				<textarea id="string_to_json"></textarea>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -39,8 +40,9 @@ var no_elem_msg = "There is no element in the DB with this id";
 $("document").ready(function(){
 	getCols();
 	$("#addCollection input").width($("#chooseCollection").width()-4);
-	$("div#serviceButtons button").width(($("div#serviceButtons").width()-79)/3);
+	$("div#serviceButtons button").width(($("div#jsoneditor_widget").width()-79)/3);
 	$("#jsoneditor").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
+	$("#string_to_json").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 	
 });
 $("#chooseId").on("change", getJSONById);
@@ -48,8 +50,9 @@ $("#chooseCollection").on("change", getColByName);
 
 $(window).resize(function(){
 	$("#addCollection input").width($("#chooseCollection").width()-4);
-	$("div#serviceButtons button").width(($("div#serviceButtons").width()-79)/3);
+	$("div#serviceButtons button").width(($("div#jsoneditor_widget").width()-79)/3);
 	$("#jsoneditor").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
+	$("#string_to_json").height($("#jsoneditor_widget").height() - ($("#paragraph").height() + $("#chooseCollection").height() + $("#jsonblock > button").height() + $("#chooseId").height() + $("#serviceButtons").height()+55));
 });
 
 function getCols(){
@@ -152,7 +155,7 @@ function setIds(data){
 };
 	        
 function addJSON(){
-	if (JSON.stringify(editor.get())==="{}"){
+	if (($("#chooseId").val() === "new_record_string" && $("#string_to_json").val() === "") || ($("#chooseId").val() !== "new_record_string" && JSON.stringify(editor.get())==="{}")){
 		$("#paragraph").text("Can't add empty object");
 		return;
 	}
@@ -161,7 +164,7 @@ function addJSON(){
 	delete json._id;
 	var data_json;
 	if ($("#chooseId").val() === "new_record_string"){
-		data_json = JSON.stringify(json.string).split("\\\"").join("\"").replace("\"","").replace("\"$","");
+		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").replace("\"","").replace("\"$","");
 	} else {
 		data_json = JSON.stringify(json);
 	}
@@ -183,11 +186,14 @@ function getJSONById(){
 	$("#paragraph").text("");
 	if ($("#chooseId").val() === "new_record"){
 		editor.set({});	
+		$("#jsoneditor").show();
+		$("#string_to_json").hide();
 	} else if ($("#chooseId").val() === "new_record_string") {
-		editor.set({
-			string: ""
-		});		
+		$("#jsoneditor").hide();
+		$("#string_to_json").show();
 	} else {
+		$("#jsoneditor").show();
+		$("#string_to_json").hide();
 		var options = {
 			url: "./json/get/"+$("#chooseId").val(),
 			type : "GET",
@@ -205,12 +211,12 @@ function getJSONById(){
 };
 
 function updateJSONById(){	
-	if ($("#chooseId").val() === "new_record"){
+	if ($("#chooseId").val() === "new_record" || $("#chooseId").val() === "new_record_string"){
 		$("#paragraph").text("Please choose a record to update");
 	} else {
 		var json = editor.get();
 		delete json._id;
-		json.tempId =  $("#chooseId").val();
+		json._id_temp =  $("#chooseId").val();
 		var options = {
 			url: "./json/update",
 			type : "PUT",
@@ -232,7 +238,7 @@ function updateJSONById(){
 };
 
 function removeJSONById(){	
-	if ($("#chooseId").val() === "new_record"){
+	if ($("#chooseId").val() === "new_record" || $("#chooseId").val() === "new_record_string"){
 		$("#paragraph").text("Please choose a record to remove");
 	} else {
 		var options = {
