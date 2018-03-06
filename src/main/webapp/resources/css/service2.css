@@ -1,0 +1,53 @@
+@charset "UTF-8";
+
+html, body, div#jsoneditor_widget{
+	height: 100%;
+}
+
+div#jsoneditor_widget{
+	width: 100%;
+}
+
+#jsoneditor {
+	min-height: 200px;
+	width: inherit;
+}
+
+select, #dbInfoBlock, #colNameBlock, #newObjectTypeBlock, #jsonblock, #string_to_json, #jsoneditor, #jsonButtons {
+	width: inherit;
+}
+
+#newObjectTypeBlock{
+	display: none;
+}
+
+#insertTypeRadio{
+	display: inline-flex;
+	vertical-align: middle;
+	text-align: center;
+}
+
+div#jsoneditor_widget > div, #jsonButtons {
+	margin: auto;
+	text-align: center;
+}
+
+#addCol, #delCol, #addJSON, #delJSON, #updColName, #backColName, #updJSON, #backJSON {
+    width: 49%;
+}
+
+#updColName, #backColName{
+	display: none;
+}
+
+#colName{
+	width: 100%;
+}
+
+#editColName{
+	width: 98%;
+}
+
+textArea#string_to_json{
+	resize: none;
+}

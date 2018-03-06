@@ -30,10 +30,16 @@ public class RestControllerClass {
 		return new ResponseEntity<Object>( HttpStatus.OK);
 	}
 	
+	@PutMapping(value="/col/upd")
+	public ResponseEntity<Object> updCollectionMapping(@RequestBody String name){
+		JSONService.updCollection(name);
+		return new ResponseEntity<Object>( HttpStatus.OK);
+	}
+	
 	@DeleteMapping(value="/col/remove")
-	public ResponseEntity<String> removeCollectionMapping(@RequestBody String name){
+	public ResponseEntity<Object> removeCollectionMapping(@RequestBody String name){
 		JSONService.removeCollection(name);
-		return new ResponseEntity<String>(name, HttpStatus.OK);
+		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/json/get/ids")
@@ -53,6 +59,13 @@ public class RestControllerClass {
 		if (obj == null || obj.isEmpty())
 			return new ResponseEntity<String>("Object is empty", HttpStatus.OK);
 		return new ResponseEntity<String>(service.addJSON(obj), HttpStatus.OK);
+	}
+	
+	@PostMapping(value="/json/stringify",produces = "text/html; charset=ISO-8859-1")
+	public ResponseEntity<String> getStringifyMapping(@RequestBody String obj){
+		if (obj == null || obj.isEmpty())
+			return new ResponseEntity<String>("Object is empty", HttpStatus.OK);
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
 	@PutMapping(value="/json/update")

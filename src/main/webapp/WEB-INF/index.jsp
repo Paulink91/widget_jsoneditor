@@ -26,6 +26,7 @@
 					<button id="updJSON" onclick="updateJSONById()">Update</button>	
 					<button id="addJSON" onclick="addJSON()">Add to DB</button>
 					<button id="delJSON" onclick="removeJSONById()">Remove</button>
+					<button id="strJSON" onclick="getStringifyJSONById()">Get Stringify</button>
 				</div>
 				<div id="jsoneditor"></div>
 				<textarea id="string_to_json"></textarea>
@@ -264,6 +265,36 @@ function removeJSONById(){
 		};
 		$.ajax(options);
 	}
+};
+
+function getStringifyJSONById(){
+	if (($("#chooseId").val() === "new_record_string" && $("#string_to_json").val() === "") || ($("#chooseId").val() !== "new_record_string" && JSON.stringify(editor.get())==="{}")){
+		$("#paragraph").text("Can't add empty object");
+		return;
+	}
+	var json = editor.get();
+	$("#paragraph").text("");
+	delete json._id;
+	var data_json;
+	if ($("#chooseId").val() === "new_record_string"){
+		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\\"").join("\\\\\\\"").replace("\"","").replace("\"$","");
+	} else {
+		data_json = JSON.stringify(json);
+	}
+	var options = {
+		url: "./json/stringify",
+		type : "POST",
+		contentType : "text/plain",
+		data : data_json,
+		datatype : 'text',
+		success : function(data) {
+			$("#jsoneditor").show();
+			$("#string_to_json").hide();
+			$("#string_to_json").val("");
+			getIds();
+		}
+	};
+	$.ajax(options);	
 };
 		</script>
 	</body>

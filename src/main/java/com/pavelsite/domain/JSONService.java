@@ -38,7 +38,7 @@ public class JSONService{
 	
 	public String getCollectionNames() {
 		JSONService.cols = new TreeSet<String>(JSONService.db.getCollectionNames());
-		String res = "<option value=\"new_record\"> - New collection - </option>";
+		String res = "";
 		for (String col:cols) {
 			res += "<option value=\"" + col + "\">" + col + "</option>";
 		}
@@ -47,6 +47,10 @@ public class JSONService{
 	
 	public static void addCollection(String name) {
 		db.createCollection(name, new BasicDBObject());
+	}
+	
+	public static void updCollection(String name) {
+		curCol.rename(name);
 	}
 	
 	public static void setCurCol(String name) {
@@ -61,8 +65,8 @@ public class JSONService{
 		DBCursor cur = curCol.find();
 		BasicDBObject obj;
 		TreeSet<String> list = new TreeSet<String>();
-		String res = "<option value=\"new_record\"> - New record - </option>", temp;
-		res += "<option value=\"new_record_string\"> - New record from string - </option>";
+		String res = "", temp;
+		res += "";
 		while (cur.hasNext()) {
 			obj = (BasicDBObject)cur.next();
 			list.add("<option value=\"" + obj.getID() + "\">" + obj.getID() + "</option>");
