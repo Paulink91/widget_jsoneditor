@@ -33,7 +33,7 @@ public class RestControllerClass {
 	@PutMapping(value="/col/upd")
 	public ResponseEntity<Object> updCollectionMapping(@RequestBody String name){
 		JSONService.updCollection(name);
-		return new ResponseEntity<Object>( HttpStatus.OK);
+		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value="/col/remove")

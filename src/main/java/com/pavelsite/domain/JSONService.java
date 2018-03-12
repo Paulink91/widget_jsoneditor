@@ -90,7 +90,9 @@ public class JSONService{
 	}
 	
 	public void updateJSON(String id, LinkedHashMap<String, Object> json){
-		curCol.update(new BasicDBObject().append("_id", new ObjectId(id)), new BasicDBObject(json));
+		BasicDBObject jsonForDB = new BasicDBObject(json);
+		jsonForDB.put("_id", new ObjectId(id));
+		curCol.save(jsonForDB);
 	}
 	
 	public void removeJSON(String id){

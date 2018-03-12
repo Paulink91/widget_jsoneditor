@@ -112,11 +112,14 @@ function createNewCol(){
 	editColName(true);
 	$("#chooseCollection > option").prop("selected","");
 	$("#colName").val("");
+	$("#chooseId").html("");
+	$("#delCol, #addJSON, #delJSON").prop("disabled","disabled");
+	$("#jsonblock, #newObjectTypeBlock").hide();
 }
 
 function getCols(){
 	$("#editColName, #delCol, #addJSON, #delJSON").prop("disabled","disabled");
-	$("#jsonblock").hide();
+	$("#jsonblock, #newObjectTypeBlock").hide();
 	$("#chooseId").html("");
 	var options = {
 		url: "./col/get/names",
@@ -223,7 +226,7 @@ function setIds(data){
 	$("#chooseId").html(data);
 	$("#newObjectTypeBlock, #jsonblock").hide();
 	editor.set({});
-	$("#string_to_json").html("");
+	$("#string_to_json").val("");
 	jsonFromDb = {};
 };
 
@@ -250,6 +253,7 @@ function getJSONById(){
 function createJSON(){
 	$("#newObjectTypeBlock, #jsonblock, #jsoneditor").show();
 	$("#string_to_json").hide();
+	$("#delJSON").prop("disabled","disabled");
 	jsonFromDb = {};
 	editor.set({});
 	$("#chooseId > option").prop("selected","");
