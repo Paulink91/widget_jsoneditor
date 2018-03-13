@@ -308,8 +308,9 @@ function addJSON(){
 
 function updateJSON(){	
 	var json = editor.get();
+	jsonFromDb = editor.get();
 	delete json._id;
-	jsonFromDb = json;
+	delete jsonFromDb._id;
 	json._id_temp =  $("#chooseId").val();
 	var options = {
 		url: "./json/update",
