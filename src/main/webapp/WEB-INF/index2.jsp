@@ -63,7 +63,7 @@ var no_elem_msg = "There is no element in the DB with this id";
 var jsonFromDb={};
 
 $("document").ready(function(){
-	getCols();
+	getCols("");
 	keepSize();
 });
 
@@ -117,7 +117,7 @@ function createNewCol(){
 	$("#jsonblock, #newObjectTypeBlock").hide();
 }
 
-function getCols(){
+function getCols(name){
 	$("#editColName, #delCol, #addJSON, #delJSON").prop("disabled","disabled");
 	$("#jsonblock, #newObjectTypeBlock").hide();
 	$("#chooseId").html("");
@@ -128,6 +128,10 @@ function getCols(){
 		success : function(data) {
 			$("#chooseCollection").html(data);
 			editColName(false);
+			if (name !== ""){
+				$("#chooseCollection").val(name);
+				getColByName();
+			}
 		}
 	};
 	$.ajax(options);
@@ -187,7 +191,7 @@ function modifyCol(url){
 			success : function() {
 				$("#colName").val("");
 				alert("Collection \"" + val + "\" have been " + msg);
-				getCols();
+				getCols(val);
 			}
 		};
 		$.ajax(options);
@@ -203,7 +207,7 @@ function removeCol(){
 		data: val,
 		success : function() {
 			alert("Collection \""+val+"\" has been removed");
-			getCols();
+			getCols("");
 		}
 	};
 	$.ajax(options);
