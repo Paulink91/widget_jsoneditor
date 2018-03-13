@@ -209,7 +209,7 @@ function removeCol(){
 	$.ajax(options);
 }
 
-function getIds(){
+function getIds(id){
 	var options = {
 		url: "./json/get/ids",
 		type : "GET",
@@ -217,6 +217,10 @@ function getIds(){
 		success : function(data) {
 			$("#delJSON").prop("disabled","disabled");
 			setIds(data);
+			if (id !== ""){
+				$("#chooseId").val(id);
+				getJSONById();
+			}
 		}
 	};
 	$.ajax(options);
@@ -243,6 +247,7 @@ function getJSONById(){
 				alert(no_elem_msg)
 			} else {
 				jsonFromDb = data;
+				delete jsonFromDb._id;
 				editor.set(jsonFromDb);
 			}
 		}
@@ -291,7 +296,7 @@ function addJSON(){
 		datatype : 'text',
 		success : function(data) {
 			alert("Element (id=\""+data+"\") has been added");
-			getIds();
+			getIds(data);
 		}
 	};
 	$.ajax(options);	
@@ -312,7 +317,6 @@ function updateJSON(){
 				alert(no_elem_msg);
 			} else {
 				alert("Element (id=\""+data+"\") has been updated");
-				getIds();
 			}
 		}
 	};
@@ -328,7 +332,7 @@ function removeJSONById(){
 		datatype : 'text',
 		success : function(data) {
 			alert("Element (id=\""+data+"\") has been removed");
-			getIds();
+			getIds("");
 		}
 	};
 	$.ajax(options);
