@@ -111,26 +111,35 @@ function setInsertType(){
 function createNewCol(){
 	editColName(true);
 	$("#chooseCollection > option").prop("selected","");
-	$("#colName").val("");
-	$("#chooseId").html("");
-	$("#delCol, #addJSON, #delJSON").prop("disabled","disabled");
-	$("#jsonblock, #newObjectTypeBlock").hide();
+	deselectCol();
 }
 
-function getCols(name){
+function selectCol(){
+	$("#editColName, #delCol, #addJSON").prop("disabled","");
+	deselectJSON();
+}
+
+function deselectCol(){
 	$("#editColName, #delCol, #addJSON, #delJSON").prop("disabled","disabled");
 	$("#jsonblock, #newObjectTypeBlock").hide();
 	$("#chooseId").html("");
+	$("#colName").val("");
+	deselectJSON();
+}
+
+function getCols(name){
 	var options = {
 		url: "./col/get/names",
 		datatype : 'text',
 		type : "GET",
 		success : function(data) {
+			deselectCol();
 			$("#chooseCollection").html(data);
 			editColName(false);
 			if (name !== ""){
 				$("#chooseCollection").val(name);
 				getColByName();
+				selectCol();
 			}
 		}
 	};
@@ -139,7 +148,6 @@ function getCols(name){
 
 function getColByName(){
 	editColName(false);
-	$("#editColName, #delCol, #addJSON").prop("disabled","");
 	var val = $("#chooseCollection").val();
 	$("#colName").val(val);
 	var options = { 
@@ -148,6 +156,7 @@ function getColByName(){
 		datatype : 'text',
 		success : function(data) {
 			setIds(data);
+			selectCol();
 		}
 	};
 	$.ajax(options);
@@ -207,10 +216,35 @@ function removeCol(){
 		data: val,
 		success : function() {
 			alert("Collection \""+val+"\" has been removed");
-			getCols("");
+			editColName(false);
+			deselectCol();
+			$("#chooseCollection option:selected").remove();
 		}
 	};
 	$.ajax(options);
+}
+
+function createJSON(){
+	deselectJSON();
+	$("#newObjectTypeBlock, #jsonblock, #jsoneditor").show();
+	$("#string_to_json").hide();
+	$("#chooseId > option").prop("selected","");
+	$("input:radio[name=insertType]").prop("checked",false);
+	$("input:radio[name=insertType]")[0].checked=true;
+}
+
+function selectJSON(){
+	$("#jsonblock, #jsoneditor").show();
+	$("#delJSON").prop("disabled","");
+	$("#string_to_json, #newObjectTypeBlock").hide();
+}
+
+function deselectJSON(){
+	$("#delJSON").prop("disabled","disabled");
+	$("#newObjectTypeBlock, #jsonblock").hide();
+	editor.set({});
+	$("#string_to_json").val("");
+	jsonFromDb = {};
 }
 
 function getIds(id){
@@ -219,9 +253,11 @@ function getIds(id){
 		type : "GET",
 		datatype : 'text',
 		success : function(data) {
+			deselectJSON();
 			$("#delJSON").prop("disabled","disabled");
 			setIds(data);
 			if (id !== ""){
+				selectJSON();
 				$("#chooseId").val(id);
 				getJSONById();
 			}
@@ -232,21 +268,15 @@ function getIds(id){
 
 function setIds(data){
 	$("#chooseId").html(data);
-	$("#newObjectTypeBlock, #jsonblock").hide();
-	editor.set({});
-	$("#string_to_json").val("");
-	jsonFromDb = {};
 };
 
 function getJSONById(){	
-	$("#jsonblock, #jsoneditor").show();
-	$("#delJSON").prop("disabled","");
-	$("#string_to_json, #newObjectTypeBlock").hide();
 	var options = {
 		url: "./json/get/"+$("#chooseId").val(),
 		type : "GET",
 		datatype : 'json',
 		success : function(data) {
+			selectJSON();
 			if (Object.keys(data).length === 0){
 				alert(no_elem_msg)
 			} else {
@@ -258,17 +288,6 @@ function getJSONById(){
 	};
 	$.ajax(options);
 };
-
-function createJSON(){
-	$("#newObjectTypeBlock, #jsonblock, #jsoneditor").show();
-	$("#string_to_json").hide();
-	$("#delJSON").prop("disabled","disabled");
-	jsonFromDb = {};
-	editor.set({});
-	$("#chooseId > option").prop("selected","");
-	$("input:radio[name=insertType]").prop("checked",false);
-	$("input:radio[name=insertType]")[0].checked=true;
-}
 
 function saveJSON(){
 	if (typeof $('#chooseId option:selected').text() === 'undefined' || $('#chooseId option:selected').text()===""){
@@ -309,8 +328,6 @@ function addJSON(){
 function updateJSON(){	
 	var json = editor.get();
 	jsonFromDb = editor.get();
-	delete json._id;
-	delete jsonFromDb._id;
 	json._id_temp =  $("#chooseId").val();
 	var options = {
 		url: "./json/update",
@@ -338,7 +355,8 @@ function removeJSONById(){
 		datatype : 'text',
 		success : function(data) {
 			alert("Element (id=\""+data+"\") has been removed");
-			getIds("");
+			deselectJSON();
+			$("#chooseId option:selected").remove();
 		}
 	};
 	$.ajax(options);
