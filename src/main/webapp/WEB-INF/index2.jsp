@@ -15,13 +15,13 @@
 			<div id="dbInfoBlock" class="row">
 				<div class="col-md-6">
 					<select id="chooseCollection" size="5"></select>
-					<button id="addCol" onclick="createNewCol()">New</button>
-					<button id="delCol" onclick="removeCol()">Remove</button>
+					<button id="addCol" class="btn-primary" onclick="createNewCol()">New</button>
+					<button id="delCol" class="btn-danger" onclick="removeCol()">Remove</button>
 				</div>
 				<div class="col-md-6">
 					<select id="chooseId" size="5"></select>
-					<button id="addJSON" onclick="createJSON()">New</button>
-					<button id="delJSON" onclick="removeJSONById()">Remove</button>
+					<button id="addJSON" class="btn-primary" onclick="createJSON()">New</button>
+					<button id="delJSON" class="btn-danger" onclick="removeJSONById()">Remove</button>
 				</div>
 			</div>
 			<div id="colNameBlock" class="row">
@@ -29,9 +29,9 @@
 					<input id="colName" disabled="disabled"/>
 				</div>
 				<div class="col-md-4">
-					<button id="editColName" onclick="editColName(true)">Edit collection name</button>
-					<button id="updColName" onclick="saveCol()">Save</button>
-					<button id="backColName" onclick="editColName(false)">Cancel</button>
+					<button id="editColName" class="btn-primary" onclick="editColName(true)">Edit collection name</button>
+					<button id="updColName" class="btn-success" onclick="saveCol()">Save</button>
+					<button id="backColName" class="btn-danger" onclick="editColName(false)">Cancel</button>
 				</div>
 			</div>
 			<div id="newObjectTypeBlock" class="row">
@@ -50,8 +50,8 @@
 				<div id="jsoneditor"></div>
 				<textarea id="string_to_json"></textarea>
 				<div id="jsonButtons">
-					<button id="updJSON" onclick="saveJSON()">Save</button>
-					<button id="backJSON" onclick="returnJSON()">Cancel</button>
+					<button id="updJSON" class="btn-success" onclick="saveJSON()">Save</button>
+					<button id="backJSON" class="btn-danger" onclick="returnJSON()">Cancel</button>
 				</div>
 			</div>
 		</div>
