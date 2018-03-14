@@ -36,14 +36,14 @@
 			</div>
 			<div id="newObjectTypeBlock" class="row">
 				<div id="insertTypeRadio" class="col-md-12">
-					
-					<div id="jsonVal" class="col-md-6">
+					<div class="col-md-4"></div>
+					<div class="col-md-2">
 						<input type="radio" name="insertType" value="json" checked="checked"><span> JSON </span>
 					</div>
-					<div id="stringVal" class="col-md-6">
+					<div class="col-md-2">
 						<input type="radio" name="insertType" value="string"><span> String </span>
 					</div>
-					
+					<div class="col-md-4"></div>
 				</div>
 			</div>
 			<div id="jsonblock" class="row">
