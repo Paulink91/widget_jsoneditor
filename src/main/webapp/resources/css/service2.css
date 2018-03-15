@@ -4,8 +4,12 @@ html, body, div#jsoneditor_widget{
 	height: 100%;
 }
 
-div#jsoneditor_widget, #colName, div#jsoneditor_widget select, #dbInfoBlock, #colNameBlock, #newObjectTypeBlock, #jsonblock, #string_to_json, #jsoneditor, #jsonButtons{
+div#jsoneditor_widget, #colName, div#jsoneditor_widget select, #dbInfoBlock, #colNameBlock, #newObjectTypeBlock, #jsonblock, #string_to_json, #jsoneditor, #jsonButtons, #stringeditor{
 	width: 100%;
+}
+
+#stringeditor{
+	margin: auto;
 }
 
 #jsoneditor {

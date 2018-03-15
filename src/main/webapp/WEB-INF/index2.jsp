@@ -48,7 +48,17 @@
 			</div>
 			<div id="jsonblock" class="row">
 				<div id="jsoneditor"></div>
-				<textarea id="string_to_json"></textarea>
+				<div id="stringeditor" class="row">
+					<div class="col-md-2">
+						<label>Choose name for new element:</label>
+					</div>
+					<div class="col-md-10">
+						<select id="nameForString">
+							<option value="test">test</option>
+						</select>
+					</div>
+					<textarea id="string_to_json"></textarea>
+				</div>
 				<div id="jsonButtons">
 					<button id="updJSON" class="btn-success" onclick="saveJSON()">Save</button>
 					<button id="backJSON" class="btn-danger" onclick="returnJSON()">Cancel</button>
@@ -70,7 +80,9 @@ $("document").ready(function(){
 $(window).resize(keepSize);
 
 function keepSize(){
-	$("#jsoneditor, #string_to_json").height($("#jsoneditor_widget").height() - ($("#dbInfoBlock").height() + $("#colNameBlock").height() + $("#newObjectTypeBlock").height() + 55));
+	var height = $("#jsoneditor_widget").height() - ($("#dbInfoBlock").height() + $("#colNameBlock").height() + $("#newObjectTypeBlock").height() + 55);
+	$("#jsoneditor").height(height);
+	$("#string_to_json").height(height - $("#nameForString").height());
 }
 
 $("#chooseCollection").on("change", getColByName);
@@ -101,10 +113,10 @@ function setInsertType(){
 	var val = $("input[name=insertType]:checked").val();
 	if (val === "json"){
 		$("#jsoneditor").show();
-		$("#string_to_json").hide();
+		$("#stringeditor").hide();
 	} else if (val === "string") {
 		$("#jsoneditor").hide();
-		$("#string_to_json").show();
+		$("#stringeditor").show();
 	}
 }
 
@@ -234,7 +246,7 @@ function removeCol(){
 function createJSON(){
 	deselectJSON();
 	$("#newObjectTypeBlock, #jsonblock, #jsoneditor").show();
-	$("#string_to_json").hide();
+	$("#stringeditor").hide();
 	$("#chooseId > option").prop("selected","");
 	$("input:radio[name=insertType]").prop("checked",false);
 	$("input:radio[name=insertType]")[0].checked=true;
@@ -243,7 +255,7 @@ function createJSON(){
 function selectJSON(){
 	$("#jsonblock, #jsoneditor").show();
 	$("#delJSON").prop("disabled","");
-	$("#string_to_json, #newObjectTypeBlock").hide();
+	$("#stringeditor, #newObjectTypeBlock").hide();
 }
 
 function deselectJSON(){
@@ -314,7 +326,9 @@ function addJSON(){
 	delete json._id;
 	var data_json;
 	if (type === "string"){
-		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\").join("\\\\\\").replace("\"","").replace("\"$","");
+		var str = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\").join("\\\\\\");
+		str = str.substring(1,str.length-1);
+		data_json = "{\"name\":\"" + $("#nameForString").val() + "\",\"content\":" + str + "}";
 	} else if (type === "json") {
 		data_json = JSON.stringify(json);
 	}
