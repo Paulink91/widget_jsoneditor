@@ -47,15 +47,41 @@
 				</div>
 			</div>
 			<div id="jsonblock" class="row">
-				<div id="jsoneditor"></div>
-				<div id="stringeditor" class="row">
-					<div class="col-md-2">
-						<label>Choose name for new element:</label>
+				<div id="jsoneditor" class="row">
+					<div id="jsonTemplateBlock" class="col-md-12 row">
+						<div class="col-md-2">
+							<label>Choose template:</label>
+						</div>
+						<div class="col-md-10">
+							<select id="jsonTemplate">
+								<option value="0">Empty</option>
+								<option value="1">Template 1</option>
+							</select>
+						</div>
 					</div>
-					<div class="col-md-10">
-						<select id="nameForString">
-							<option value="test">test</option>
-						</select>
+					<div id="json_to_json"></div>
+				</div>
+				<div id="stringeditor" class="row">
+					<div id="StringTemplateBlock" class="col-md-12 row">
+						<div class="col-md-2">
+							<label>Choose template:</label>
+						</div>
+						<div class="col-md-10">
+							<select id="stringTemplate">
+								<option value="0">Empty</option>
+								<option value="1">Checklist</option>
+							</select>
+						</div>
+					</div>
+					<div id="string_to_json_name" class="col-md-12 row">
+						<div class="col-md-2">
+							<label>Choose name for new element:</label>
+						</div>
+						<div class="col-md-10">
+							<select id="nameForString">
+								<option value="test">test</option>
+							</select>
+						</div>
 					</div>
 					<textarea id="string_to_json"></textarea>
 				</div>
@@ -67,10 +93,13 @@
 		</div>
 		<script type="text/javascript">
 		
-var container = document.getElementById("jsoneditor");
+var container = document.getElementById("json_to_json");
 var editor = new JSONEditor(container);
 var no_elem_msg = "There is no element in the DB with this id";
 var jsonFromDb={};
+var templates=[{}, {"templateVersion":1,"array":["test"]}];
+var startSize;
+var height;
 
 $("document").ready(function(){
 	getCols("");
@@ -80,13 +109,34 @@ $("document").ready(function(){
 $(window).resize(keepSize);
 
 function keepSize(){
-	var height = $("#jsoneditor_widget").height() - ($("#dbInfoBlock").height() + $("#colNameBlock").height() + $("#newObjectTypeBlock").height() + 55);
-	$("#jsoneditor").height(height);
-	$("#string_to_json").height(height - $("#nameForString").height());
+	height = $("#jsoneditor_widget").height() - ($("#dbInfoBlock").height() + $("#colNameBlock").height() + $("#newObjectTypeBlock").height() + 55);
+	$("#jsoneditor, #stringeditor").height(height);
+	startSize = $("#stringeditor").height() - $("#stringTemplate").height() - 15;
+	$("#string_to_json").height(startSize);
+	if ($("#jsonTemplateBlock").css("display") == "none" ) {
+		$("#json_to_json").height(startSize);
+	} else {
+		$("#json_to_json").height(startSize - $("#jsonTemplateBlock").height());
+	}
+	if ($("#string_to_json_name").css("display") == "none" ) {
+		$("#string_to_json").height(startSize);
+	} else {
+		$("#string_to_json").height(startSize - $("#string_to_json_name").height());
+	}
 }
 
 $("#chooseCollection").on("change", getColByName);
 $("#chooseId").on("change", getJSONById);
+$("#jsonTemplate").on("change", getJSONTemplate);
+$("#stringTemplate").on("change", function(){
+	if ($(this).val() == 0){
+		$("#string_to_json_name").hide();		
+	} else {
+		$("#string_to_json_name").val("");
+		$("#string_to_json_name").show();
+	}
+	keepSize();
+});
 $("input[name=insertType]").on("click",setInsertType)
 
 function editColName(flag){
@@ -114,9 +164,14 @@ function setInsertType(){
 	if (val === "json"){
 		$("#jsoneditor").show();
 		$("#stringeditor").hide();
+		$("#jsonTemplate").val("0");
+		editor.set({});
 	} else if (val === "string") {
 		$("#jsoneditor").hide();
 		$("#stringeditor").show();
+		$("#string_to_json_name").hide();
+		$("#stringTemplate").val("0");
+		$("#string_to_json").val("");
 	}
 }
 
@@ -148,7 +203,7 @@ function deselectCol(){
 
 function getCols(name){
 	var options = {
-		url: "./col/get/names",
+		url: "./col/names",
 		datatype : 'text',
 		type : "GET",
 		success : function(data) {
@@ -246,16 +301,22 @@ function removeCol(){
 function createJSON(){
 	deselectJSON();
 	$("#newObjectTypeBlock, #jsonblock, #jsoneditor").show();
+	$("#jsonTemplateBlock").show();
 	$("#stringeditor").hide();
 	$("#chooseId > option").prop("selected","");
 	$("input:radio[name=insertType]").prop("checked",false);
 	$("input:radio[name=insertType]")[0].checked=true;
+	editor.set(templates[0]);
+	keepSize();
+	$("#json_to_json").height(startSize - $("#jsonTemplateBlock").height() );
 }
 
 function selectJSON(){
 	$("#jsonblock, #jsoneditor").show();
 	$("#delJSON").prop("disabled","");
 	$("#stringeditor, #newObjectTypeBlock").hide();
+	$("#jsonTemplateBlock").hide();
+	keepSize();
 }
 
 function deselectJSON(){
@@ -299,13 +360,15 @@ function getJSONById(){
 			if (Object.keys(data).length === 0){
 				alert(no_elem_msg)
 			} else {
-				jsonFromDb = data;
-				delete jsonFromDb._id;
-				editor.set(jsonFromDb);
+				editor.set(JSON.parse(data));
 			}
 		}
 	};
 	$.ajax(options);
+};
+
+function getJSONTemplate(){
+	editor.set(templates[$(this).val()]);
 };
 
 function saveJSON(){
@@ -326,9 +389,11 @@ function addJSON(){
 	delete json._id;
 	var data_json;
 	if (type === "string"){
-		var str = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\").join("\\\\\\");
-		str = str.substring(1,str.length-1);
-		data_json = "{\"name\":\"" + $("#nameForString").val() + "\",\"content\":" + str + "}";
+		data_json = JSON.stringify($("#string_to_json").val()).split("\\\"").join("\"").split("\\\\").join("\\\\\\");
+		data_json = data_json.substring(1,data_json.length-1);
+		if ($("#stringTemplate").val() == 1){
+			data_json = "{\"name\":\"" + $("#nameForString").val() + "\",\"content\":" + data_json + "}";
+		}
 	} else if (type === "json") {
 		data_json = JSON.stringify(json);
 	}

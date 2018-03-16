@@ -13,7 +13,7 @@ public class RestControllerClass {
 	
 	private static JSONService service = JSONService.getService();
 	
-	@GetMapping(value="/col/get/names")
+	@GetMapping(value="/col/names")
 	public ResponseEntity<Object> getCollectionNamesMapping(){
 		return new ResponseEntity<Object>(service.getCollectionNames(), HttpStatus.OK);
 	}
@@ -49,9 +49,7 @@ public class RestControllerClass {
 	
 	@GetMapping(value="/json/get/{id}")
 	public ResponseEntity<Object> getJSONMapping(@PathVariable("id") String jsonId){
-		Map<String, Object> map = service.getJSON(jsonId);
-		map.replace("_id", jsonId);
-		return new ResponseEntity<Object>(map, HttpStatus.OK);
+		return new ResponseEntity<Object>(service.getJSON(jsonId).toString(), HttpStatus.OK);
 	}
 	
 	@PostMapping(value="/json/add")
