@@ -13,15 +13,15 @@
 	<body>
 		<div id="jsoneditor_widget">
 			<div id="dbInfoBlock" class="row">
-				<div class="col-md-6">
+				<div id="collectionBlock" class="col-md-6">
 					<select id="chooseCollection" size="5"></select>
-					<button id="addCol" class="btn-primary" onclick="createNewCol()">New</button>
-					<button id="delCol" class="btn-danger" onclick="removeCol()">Remove</button>
+					<button id="addCol" class="btn-primary col-md-12" onclick="createNewCol()">New</button>
+					<button id="delCol" class="btn-danger" onclick="removeCol()" style="display: none;">Remove</button>
 				</div>
-				<div class="col-md-6">
-					<select id="chooseId" size="5"></select>
-					<button id="addJSON" class="btn-primary" onclick="createJSON()">New</button>
-					<button id="delJSON" class="btn-danger" onclick="removeJSONById()">Remove</button>
+				<div id="jsonBlock" class="col-md-6">
+					<input id="jsonIdSearcher" class="col-md-10"/><button class="col-md-2 btn-primary" onclick="setJSONId()">Get</button>
+					<select id="chooseId" size="4"></select>
+					<button id="addJSON" class="btn-primary col-md-6" onclick="createJSON()">New</button><button id="delJSON" class="btn-danger col-md-6" onclick="removeJSONById()">Remove</button>
 				</div>
 			</div>
 			<div id="colNameBlock" class="row">
@@ -29,9 +29,8 @@
 					<input id="colName" disabled="disabled"/>
 				</div>
 				<div class="col-md-4">
-					<button id="editColName" class="btn-primary" onclick="editColName(true)">Edit collection name</button>
-					<button id="updColName" class="btn-success" onclick="saveCol()">Save</button>
-					<button id="backColName" class="btn-danger" onclick="editColName(false)">Cancel</button>
+					<button id="editColName" class="btn-primary col-md-12" onclick="editColName(true)">Edit collection name</button>
+					<button id="updColName" class="btn-success col-md-6" onclick="saveCol()">Save</button><button id="backColName" class="btn-danger col-md-6" onclick="editColName(false)">Cancel</button>
 				</div>
 			</div>
 			<div id="newObjectTypeBlock" class="row">
@@ -86,8 +85,7 @@
 					<textarea id="string_to_json"></textarea>
 				</div>
 				<div id="jsonButtons">
-					<button id="updJSON" class="btn-success" onclick="saveJSON()">Save</button>
-					<button id="backJSON" class="btn-danger" onclick="returnJSON()">Cancel</button>
+					<button id="updJSON" class="btn-success col-md-6" onclick="saveJSON()">Save</button><button id="backJSON" class="btn-danger col-md-6" onclick="returnJSON()">Cancel</button>
 				</div>
 			</div>
 		</div>
@@ -103,6 +101,7 @@ var height;
 
 $("document").ready(function(){
 	getCols("");
+	deselectCol();
 	keepSize();
 });
 
@@ -190,6 +189,7 @@ function createNewCol(){
 
 function selectCol(){
 	$("#editColName, #delCol, #addJSON").prop("disabled","");
+	$("#jsonBlock").show();
 	deselectJSON();
 }
 
@@ -198,6 +198,7 @@ function deselectCol(){
 	$("#jsonblock, #newObjectTypeBlock").hide();
 	$("#chooseId").html("");
 	$("#colName").val("");
+	$("#jsonBlock").hide();
 	deselectJSON();
 }
 
@@ -366,6 +367,15 @@ function getJSONById(){
 	};
 	$.ajax(options);
 };
+
+function setJSONId(){
+	if ($("#chooseId > option[value=" + $("#jsonIdSearcher").val() + "]").length){
+		$("#chooseId").val($("#jsonIdSearcher").val());
+		getJSONById();
+	} else {
+		alert("Object with ID you entered doesn't exist");	
+	}
+}
 
 function getJSONTemplate(){
 	editor.set(templates[$(this).val()]);

@@ -12,6 +12,11 @@ div#jsoneditor_widget, #colName, div#jsoneditor_widget select, #dbInfoBlock, #co
 	margin: auto;
 }
 
+#dbInfoBlock > div > input, #dbInfoBlock > div > button{
+	height: 23px;
+	font-size: smaller;
+}
+
 #jsoneditor {
 	min-height: 200px;
 }
@@ -31,10 +36,6 @@ div#jsoneditor_widget > div, #jsonButtons {
 	text-align: center;
 }
 
-#addCol, #delCol, #addJSON, #delJSON, #updColName, #backColName, #updJSON, #backJSON {
-    width: 49%;
-}
-
 #editColName{
 	width: 98%;
 }
@@ -45,4 +46,8 @@ textArea#string_to_json{
 
 #insertTypeRadio > div > span, #insertTypeRadio > div > input{
 	cursor: pointer;
+}
+
+buttons{
+	display: inline;
 }
