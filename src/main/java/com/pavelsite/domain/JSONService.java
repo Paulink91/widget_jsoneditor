@@ -10,7 +10,6 @@ public class JSONService{
 	private static JSONService service;
 	private static DB db;
 	private static TreeSet<String> cols;
-	private static DBCollection curCol;
 	
 	private JSONService(){
 		JSONService.service = this;
@@ -33,7 +32,6 @@ public class JSONService{
 		String databaseUrl = "jdbc:db2://" + host + ":" + port + "/" + database;		 
 		JSONService.db = NoSQLClient.getDB (databaseUrl, user, pass);
 		JSONService.cols = new TreeSet<String>(JSONService.db.getCollectionNames());
-		JSONService.curCol = db.getCollection(cols.first());
 	}
 	
 	public String getCollectionNames() {
@@ -45,24 +43,20 @@ public class JSONService{
 		return res;
 	}
 	
-	public static void addCollection(String name) {
-		db.createCollection(name, new BasicDBObject());
+	public static void addCollection(String colName) {
+		db.createCollection(colName, new BasicDBObject());
 	}
 	
-	public static void updCollection(String name) {
-		curCol.rename(name);
+	public static void updCollection(String oldName, String newName) {
+		db.getCollection(oldName).rename(newName);
 	}
 	
-	public static void setCurCol(String name) {
-		JSONService.curCol = JSONService.db.getCollection(name);
+	public static void removeCollection(String colName) {
+		db.getCollection(colName).drop();
 	}
 	
-	public static void removeCollection(String name) {
-		db.getCollection(name).drop();
-	}
-	
-	public String getJSONIds() {
-		DBCursor cur = curCol.find();
+	public String getJSONIds(String colName) {
+		DBCursor cur = db.getCollection(colName).find();
 		BasicDBObject obj;
 		TreeSet<String> list = new TreeSet<String>();
 		String res = "", temp;
@@ -79,23 +73,23 @@ public class JSONService{
 		return res;
 	}
 	
-	public String addJSON(LinkedHashMap<String, Object> json){
+	public String addJSON(String colName, LinkedHashMap<String, Object> json){
 		BasicDBObject jsonForDB = new BasicDBObject(json);
-		curCol.insert(jsonForDB);
+		db.getCollection(colName).save(jsonForDB);
 		return jsonForDB.getID().toString();
 	}
 	
-	public BasicDBObject getJSON(String id){
-		return (BasicDBObject)curCol.findOne(new ObjectId(id));
+	public BasicDBObject getJSON(String colName, String jsonId){
+		return (BasicDBObject)db.getCollection(colName).findOne(new ObjectId(jsonId));
 	}
 	
-	public void updateJSON(String id, LinkedHashMap<String, Object> json){
+	public void updateJSON(String colName, String jsonId, LinkedHashMap<String, Object> json){
 		BasicDBObject jsonForDB = new BasicDBObject(json);
-		jsonForDB.put("_id", new ObjectId(id));
-		curCol.save(jsonForDB);
+		jsonForDB.put("_id", new ObjectId(jsonId));
+		db.getCollection(colName).save(jsonForDB);
 	}
 	
-	public void removeJSON(String id){
-		curCol.remove(new BasicDBObject().append("_id", new ObjectId(id)));
+	public void removeJSON(String colName, String jsonId){
+		db.getCollection(colName).remove(new BasicDBObject().append("_id", new ObjectId(jsonId)));
 	}
 }

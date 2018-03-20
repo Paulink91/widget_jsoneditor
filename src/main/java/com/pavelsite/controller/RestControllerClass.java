@@ -18,10 +18,10 @@ public class RestControllerClass {
 		return new ResponseEntity<Object>(service.getCollectionNames(), HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/col/get/{id}")
-	public ResponseEntity<Object> setCollectionMapping(@PathVariable("id") String colName){
-		JSONService.setCurCol(colName);
-		return this.getJSONIdsMapping();
+	@GetMapping(value="/col/get/{name}")
+	public ResponseEntity<Object> setCollectionMapping(@PathVariable("name") String colName){
+		//JSONService.setCurCol(colName);
+		return this.getJSONIdsMapping(colName);
 	}
 	
 	@PostMapping(value="/col/add")
@@ -30,53 +30,42 @@ public class RestControllerClass {
 		return new ResponseEntity<Object>( HttpStatus.OK);
 	}
 	
-	@PutMapping(value="/col/upd")
-	public ResponseEntity<Object> updCollectionMapping(@RequestBody String name){
-		JSONService.updCollection(name);
+	@PutMapping(value="/col/upd/{name}")
+	public ResponseEntity<Object> updCollectionMapping(@PathVariable("name") String colName, @RequestBody String newName){
+		JSONService.updCollection(colName, newName);
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value="/col/remove")
-	public ResponseEntity<Object> removeCollectionMapping(@RequestBody String name){
-		JSONService.removeCollection(name);
+	@DeleteMapping(value="/col/remove/{name}")
+	public ResponseEntity<Object> removeCollectionMapping(@PathVariable("name") String colName){
+		JSONService.removeCollection(colName);
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/json/get/ids")
-	public ResponseEntity<Object> getJSONIdsMapping(){
-		return new ResponseEntity<Object>(service.getJSONIds(), HttpStatus.OK);
+	@GetMapping(value="/json/get/{name}/ids")
+	public ResponseEntity<Object> getJSONIdsMapping(@PathVariable("name") String colName){
+		return new ResponseEntity<Object>(service.getJSONIds(colName), HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/json/get/{id}")
-	public ResponseEntity<Object> getJSONMapping(@PathVariable("id") String jsonId){
-		return new ResponseEntity<Object>(service.getJSON(jsonId).toString(), HttpStatus.OK);
+	@GetMapping(value="/json/get/{name}/{id}")
+	public ResponseEntity<Object> getJSONMapping(@PathVariable("name") String colName, @PathVariable("id") String jsonId){
+		return new ResponseEntity<Object>(service.getJSON(colName, jsonId).toString(), HttpStatus.OK);
 	}
 	
 	@PostMapping(value="/json/add")
-	public ResponseEntity<String> addJSONMapping(@RequestBody LinkedHashMap<String, Object> obj){
-		if (obj == null || obj.isEmpty())
-			return new ResponseEntity<String>("Object is empty", HttpStatus.OK);
-		return new ResponseEntity<String>(service.addJSON(obj), HttpStatus.OK);
+	public ResponseEntity<String> addJSONMapping(@RequestParam("colName") String colName, @RequestBody LinkedHashMap<String, Object> obj){
+		return new ResponseEntity<String>(service.addJSON(colName, obj), HttpStatus.OK);
 	}
 	
-	@PostMapping(value="/json/stringify",produces = "text/html; charset=ISO-8859-1")
-	public ResponseEntity<String> getStringifyMapping(@RequestBody String obj){
-		if (obj == null || obj.isEmpty())
-			return new ResponseEntity<String>("Object is empty", HttpStatus.OK);
-		return new ResponseEntity<String>(HttpStatus.OK);
+	@PutMapping(value="/json/update/{name}/{id}")
+	public ResponseEntity<String> updateJSONMapping(@PathVariable("name") String colName, @PathVariable("id") String jsonId, @RequestBody LinkedHashMap<String, Object> obj){
+		service.updateJSON(colName, jsonId, obj);
+		return new ResponseEntity<String>(jsonId, HttpStatus.OK);
 	}
 	
-	@PutMapping(value="/json/update")
-	public ResponseEntity<String> updateJSONMapping(@RequestBody LinkedHashMap<String, Object> obj){
-		String id = obj.get("_id_temp").toString();
-		obj.remove("_id_temp");		
-		service.updateJSON(id, obj);
-		return new ResponseEntity<String>(id, HttpStatus.OK);
-	}
-	
-	@DeleteMapping(value="/json/remove")
-	public ResponseEntity<String> removeJSONMapping(@RequestBody String jsonId){
-		service.removeJSON(jsonId);
+	@DeleteMapping(value="/json/remove/{name}/{id}")
+	public ResponseEntity<String> removeJSONMapping(@PathVariable("name") String colName, @PathVariable("id") String jsonId){
+		service.removeJSON(colName, jsonId);
 		return new ResponseEntity<String>(jsonId, HttpStatus.OK);
 	}
 }

@@ -251,9 +251,11 @@ function modifyCol(url){
 	if (url === "add"){
 		type = "POST";
 		msg = "created"; 
+		url = "./col/add";
 	} else if (url === "upd") {
 		type = "PUT";
 		msg = "updated";
+		url = "./col/upd/" + $("#chooseCollection").val();
 	}
 	
 	var val = $("#colName").val();
@@ -267,8 +269,9 @@ function modifyCol(url){
 	if (exist){
 		alert("Collection with this name is already exist");
 	} else {
+		
 		var options = { 
-			url: "./col/" + url,
+			url: url,
 			type : type,
 			contentType: "text/plain",
 			data: val,
@@ -285,10 +288,8 @@ function modifyCol(url){
 function removeCol(){
 	var val = $("#chooseCollection").val();
 	var options = {
-		url: "./col/remove",
+		url: "./col/remove/"+val,
 		type : "DELETE",
-		contentType : "text/plain",
-		data: val,
 		success : function() {
 			alert("Collection \""+val+"\" has been removed");
 			editColName(false);
@@ -309,7 +310,6 @@ function createJSON(){
 	$("input:radio[name=insertType]")[0].checked=true;
 	editor.set(templates[0]);
 	keepSize();
-	$("#json_to_json").height(startSize - $("#jsonTemplateBlock").height() );
 }
 
 function selectJSON(){
@@ -330,7 +330,7 @@ function deselectJSON(){
 
 function getIds(id){
 	var options = {
-		url: "./json/get/ids",
+		url: "./json/get/" + $("#chooseCollection").val() +"/ids",
 		type : "GET",
 		datatype : 'text',
 		success : function(data) {
@@ -353,7 +353,7 @@ function setIds(data){
 
 function getJSONById(){	
 	var options = {
-		url: "./json/get/"+$("#chooseId").val(),
+		url: "./json/get/"+$("#chooseCollection").val()+"/"+$("#chooseId").val(),
 		type : "GET",
 		datatype : 'json',
 		success : function(data) {
@@ -408,7 +408,7 @@ function addJSON(){
 		data_json = JSON.stringify(json);
 	}
 	var options = {
-		url: "./json/add",
+		url: "./json/add?colName="+$("#chooseCollection").val(),
 		type : "POST",
 		contentType : "application/json",
 		data : data_json,
@@ -424,9 +424,8 @@ function addJSON(){
 function updateJSON(){	
 	var json = editor.get();
 	jsonFromDb = editor.get();
-	json._id_temp =  $("#chooseId").val();
 	var options = {
-		url: "./json/update",
+		url: "./json/update/"+$("#chooseCollection").val()+"/"+$("#chooseId").val(),
 		type : "PUT",
 		contentType : "application/json",
 		data: JSON.stringify(json),
@@ -444,13 +443,10 @@ function updateJSON(){
 
 function removeJSONById(){	
 	var options = {
-		url: "./json/remove",
+		url: "./json/remove/"+$("#chooseCollection").val()+"/"+$("#chooseId").val(),
 		type : "DELETE",
-		contentType : "text/plain",
-		data: $("#chooseId").val(),
-		datatype : 'text',
-		success : function(data) {
-			alert("Element (id=\""+data+"\") has been removed");
+		success : function() {
+			alert("Element (id=\""+$("#chooseId").val()+"\") has been removed");
 			deselectJSON();
 			$("#chooseId option:selected").remove();
 		}
